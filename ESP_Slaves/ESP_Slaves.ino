@@ -1,22 +1,35 @@
 #include <ESP8266WiFi.h>
 
 // Netwerk configuratie
-const char* ssid = "ESP8266_SSID";
+const char* ssid = "SenseTableAP";
 const char* password = "test1234";
-const char* host = "192.168.11.4";
+const char* host = "192.168.11.9";
 
 // Client object
 WiFiClient client;
 
 // Tijd tussen metingen
-const int sleepTimeSeconds = 2;
+const int sleepTimeSeconds = 2000;
 
-String sensor_type = "temperature";
-float sensor_value = 28.2;
+String sensor_type = "#sensor";
+float sensor_value = 0;
+
+#define sensor_pin 16  //D0
+
+void readSensor() {
+
+
+  Serial.println(sensor_value);
+}
+
+void setupSensor() {
+  pinMode(sensor_pin, INPUT);
+}
 
 void setup() {
   WiFi.begin(ssid, password);
   Serial.begin(115200);
+  setupSensor();
 
   // wacht totdat er een WiFi connectie is
   while (WiFi.status() != WL_CONNECTED) {
@@ -28,8 +41,8 @@ void setup() {
 }
 
 void loop() {
-
   if(client.connect(host,80)) {
+    readSensor();
     String url = "/update?type=";
     url += String(sensor_type);
     url += "&value=";
@@ -46,5 +59,5 @@ void loop() {
     }
     Serial.println();  */
   }
-  delay(2000);
+  delay(sleepTimeSeconds);
 }
