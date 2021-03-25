@@ -40,6 +40,7 @@ void setup() {
 
 void loop() {
   if(client.connect(host,80)) {
+    readSensor();
     String url = "/update?type=";
     url += String(sensor_type);
     url += "&value=";
