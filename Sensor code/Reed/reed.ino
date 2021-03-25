@@ -21,7 +21,7 @@ void readSensor() {
 }
 
 void setupSensor() {
-  pinMode(sensor_pin, OUTPUT);
+  pinMode(sensor_pin, INPUT);
 }
 
 void setup() {
