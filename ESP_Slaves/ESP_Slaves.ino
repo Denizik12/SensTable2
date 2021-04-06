@@ -11,8 +11,8 @@ WiFiClient client;
 // Tijd tussen metingen
 const int sleepTimeSeconds = 2000;
 
-String sensor_type = "#sensor";
-float sensor_value = 0;
+String sensor_type = "TestSensor2";
+float sensor_value = 70;
 
 #define sensor_pin 16  //D0
 
@@ -29,7 +29,7 @@ void setupSensor() {
 void setup() {
   WiFi.begin(ssid, password);
   Serial.begin(115200);
-  setupSensor();
+//  setupSensor();
 
   // wacht totdat er een WiFi connectie is
   while (WiFi.status() != WL_CONNECTED) {
@@ -42,7 +42,7 @@ void setup() {
 
 void loop() {
   if(client.connect(host,80)) {
-    readSensor();
+//    readSensor();
     String url = "/update?type=";
     url += String(sensor_type);
     url += "&value=";
