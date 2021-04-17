@@ -1,0 +1,11 @@
+ip: 145.24.222.125
+inlog: ubuntu-0984223
+wachtwoord: B55j2m
+
+database:
+user: root
+pass: 7SrWFE&F
+
+user: ZiweZhang
+pass: zLC&moW2
+

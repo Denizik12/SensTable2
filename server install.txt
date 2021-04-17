@@ -1,0 +1,18 @@
+sudo apt-get update
+
+sudo apt-get install apache2
+
+sudo apt-get install php
+
+sudo apt-get install libapache2-mod-php
+
+sudo apt-get install mysql-server mysql-client
+// root account maken
+sudo mysql_secure_installation
+sudo mysql -u root -p
+	//user aanmaken
+	CREATE USER 'ZiweZhang'@'localhost' IDENTIFIED BY 'zLC&moW2';
+	GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'ZiweZhang'@'localhost' WITH GRANT OPTION;
+	FLUSH PRIVILEGES;
+
+sudo apt-get install phpmyadmin
