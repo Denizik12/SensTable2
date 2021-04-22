@@ -6,7 +6,7 @@ const code = document.getElementById("sens-code");
 const img = document.getElementById("sens-image");
 const sens = document.getElementById("sens");
 const pauseButton = document.getElementById("pauseButton");
-const url = "https://niekvanleeuwen.nl/senstable/api/sensors/get/";
+const url = "http://145.24.222.125/api/sensors/get/";
 let request = new XMLHttpRequest();
 let chart;
 let dataArr = [];
@@ -122,7 +122,7 @@ request.onreadystatechange = function() {
                 shortDescription.textContent = sensor.short_description;
                 description.textContent = sensor.wiki;
                 code.innerHTML = "\n" + sensor.code;
-                img.setAttribute("src", "admin/" + sensor.diagram);
+                img.setAttribute("src", sensor.diagram);
                 // Rerun Prism syntax highlighting on the current page
                 Prism.highlightAll();
             });

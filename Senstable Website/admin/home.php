@@ -81,6 +81,8 @@
 			</table>
 			<i class="fas fa-plus-circle add-sensor" id="add-sensor"></i>
 			<p class="lbl-status" id="lbl-status"></p>
+
+          <!-- adding sensor-->
 		  </div>
 			<div class="form-popup" id="popup-form">
 				<form method="post" enctype="multipart/form-data">
@@ -93,6 +95,7 @@
 
 					<p class="form-content">Diagram</p>
 					<input type="file" class="form-control-file form-content" id="fileToUpload" name="fileToUpload" required>
+                    <input type="text" id="fileToBase64" hidden>   <!-- Base64 string is being saved here, to further use in the API -->
 					<hr>
 
 					<textarea class="form-input form-content" id="sensShortDescription" rows="2" name="sensShortDescription" placeholder="Korte beschrijving (max 100 karakters)" required></textarea>
@@ -149,5 +152,23 @@
     <script>
       feather.replace()
     </script>
+
+<!--    update the value of fileToBase64-->
+    <script>
+//        Changes the image to a Base64 string
+        document.getElementById("fileToUpload").addEventListener("change", function (){
+            const reader = new FileReader();
+
+            reader.addEventListener("load", () => {
+                console.log(reader.result);
+                const fileToBase64 = document.getElementById("fileToBase64");
+                fileToBase64.value = reader.result;
+
+            });
+
+            reader.readAsDataURL(this.files[0]);
+        });
+    </script>
+
   </body>
 </html>

@@ -1,15 +1,18 @@
+// directory sensoren API
+const urlSensorApi = "http://145.24.222.125/api/sensors/"
+
 function loadSensorTable() {
     const tbody = document.getElementById("table");
 
-    //create a request variable 
-    var request = new XMLHttpRequest();
+    //create a request variable
+    const request = new XMLHttpRequest();
 
     //open a new connection
-    request.open("GET", "https://niekvanleeuwen.nl/senstable/api/sensors/get/", true);
+    request.open("GET", urlSensorApi + "get/", true);
 
     request.onload = function() {
         //parse the object
-        var data = JSON.parse(this.response);
+        let data = JSON.parse(this.response);
 
         //handle errors
         if (request.status >= 200 && request.status < 400) {
@@ -32,7 +35,7 @@ function loadSensorTable() {
                 dateAdded.textContent = sensor.date_added;
 
                 const deleteSensor = document.createElement("td");
-                var i_element = document.createElement('I');
+                let i_element = document.createElement('I');
                 i_element.className = "fas fa-trash-alt delete-sensor";
                 i_element.name = `delete-${sensor.id}`;
                 i_element.onclick = function() {
@@ -65,9 +68,9 @@ function loadSensorTable() {
 }
 
 function clearSensorTable() {
-    var myTable = document.getElementById("sensorTable");
-    var rowCount = myTable.rows.length;
-    for (var x = rowCount - 1; x > 0; x--) {
+    let myTable = document.getElementById("sensorTable");
+    let rowCount = myTable.rows.length;
+    for (let x = rowCount - 1; x > 0; x--) {
         myTable.deleteRow(x);
     }
 }
@@ -86,65 +89,58 @@ function closeForm() {
 
 function removeSensor(sensorId) {
     if (confirm(`Weet u zeker dat u deze sensor, #${sensorId}, wilt verwijderen?`)) {
-        var token = localStorage.getItem('token');
-        var data = {
+        let token = localStorage.getItem('token');
+        let data = {
             "id": sensorId,
             "token": token
         };
 
-        var request = new XMLHttpRequest();
-        request.open("POST", "https://niekvanleeuwen.nl/senstable/api/sensors/delete/", true);
+        let request = new XMLHttpRequest();
+        request.open("POST", urlSensorApi + "delete/", true);
         request.setRequestHeader('Content-type', 'application/json');
         request.send(JSON.stringify(data));
 
         request.onload = function() {
-            var json = JSON.parse(request.responseText);
+            let json = JSON.parse(request.responseText);
             showResponse(json);
         };
     }
 }
 
 function addSensor() {
-    var request = new XMLHttpRequest();
-    var name = document.getElementById("sensName").value;
-    var serialNumber = document.getElementById("sensSerialNumber").value;
-    var file = document.getElementById("fileToUpload").value;
-    var shortDescription = document.getElementById("sensShortDescription").value;
-    var wiki = document.getElementById("sensWiki").value;
-    var code = document.getElementById("sensCode").value;
-    var token = localStorage.getItem('token');
+    let request = new XMLHttpRequest();
+    let name = document.getElementById("sensName").value;
+    let serialNumber = document.getElementById("sensSerialNumber").value;
+    let diagram = document.getElementById("fileToBase64").value;
+    let shortDescription = document.getElementById("sensShortDescription").value;
+    let wiki = document.getElementById("sensWiki").value;
+    let code = document.getElementById("sensCode").value;
+    let token = localStorage.getItem('token');
 
-    // returns only the filename
-    if (file) {
-        var startIndex = (file.indexOf('\\') >= 0 ? file.lastIndexOf('\\') : file.lastIndexOf('/'));
-        var filename = file.substring(startIndex);
-        if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
-            filename = filename.substring(1);
-        }
-        file = filename;
-    }
-    var data = {
+
+    let data = {
         "name": name,
         "short_description": shortDescription,
         "serial_number": serialNumber,
-        "diagram": `img/sensors/${file}`,
+        "diagram": diagram,
         "wiki": wiki,
         "code": code,
         "token": token
     };
 
-    request.open("POST", "https://niekvanleeuwen.nl/senstable/api/sensors/add/", true);
+    request.open("POST", urlSensorApi + "add/", true);
     request.setRequestHeader('Content-type', 'application/json');
     request.send(JSON.stringify(data));
 
     request.onload = function() {
-        var json = JSON.parse(request.responseText);
+        let json = JSON.parse(request.responseText);
         showResponse(json);
+        closeForm();
     };
 }
 
 function showResponse(json) {
-    var lbl = document.getElementById('lbl-status');
+    let lbl = document.getElementById('lbl-status');
 
     if (Object.keys(json).includes("result")) {
         lbl.innerHTML = json["result"];
@@ -159,22 +155,22 @@ function showResponse(json) {
 }
 
 function getTableData(id) {
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     //open a new connection
-    request.open("POST", "https://niekvanleeuwen.nl/senstable/api/sensors/get/", true);
+    request.open("POST", urlSensorApi + "get/", true);
     request.setRequestHeader('Content-type', 'application/json');
 
-    var data = {
+    let data = {
         "id": id,
     };
     request.send(JSON.stringify(data));
 
     request.onload = function() {
         //parse the object
-        var data = JSON.parse(this.responseText);
+        let data = JSON.parse(this.responseText);
         openEditForm();
 
-        var hd = document.getElementById("edit-form-header");
+        let hd = document.getElementById("edit-form-header");
         hd.innerHTML = `${hd.innerHTML}${data[0]['id']}`;
 
         Object.keys(data[0]).forEach(function(key) {
@@ -185,12 +181,12 @@ function getTableData(id) {
 }
 
 function saveSensor() {
-    var request = new XMLHttpRequest();
-    request.open("PUT", "https://niekvanleeuwen.nl/senstable/api/sensors/update/", true);
+    let request = new XMLHttpRequest();
+    request.open("PUT", urlSensorApi + "update/", true);
     request.setRequestHeader('Content-type', 'application/json');
 
-    var token = localStorage.getItem('token');
-    var data = {
+    let token = localStorage.getItem('token');
+    let data = {
         "id": document.getElementById('edit-form-header').innerHTML.replace("Sensor bewerken: #", ""),
         "name": document.getElementById(`sens-name-edit`).value,
         "short_description": document.getElementById(`sens-short_description-edit`).value,
@@ -202,7 +198,7 @@ function saveSensor() {
     request.send(JSON.stringify(data));
 
     request.onload = function() {
-        var json = JSON.parse(request.responseText);
+        let json = JSON.parse(request.responseText);
         showResponse(json);
         closeEditForm();
     }
@@ -215,6 +211,6 @@ function openEditForm() {
 
 function closeEditForm() {
     document.getElementById("edit-popup-form").style.display = "none";
-    var hd = document.getElementById("edit-form-header");
+    let hd = document.getElementById("edit-form-header");
     hd.innerHTML = `Sensor bewerken: #`;
 }

@@ -6,7 +6,7 @@ class API {
 	// Constructor
 	function __construct() {
 		// connect to database
-		require_once '../config/config.php';
+		require_once './../../../config/config.php';
 		$this->pdo = new PDO(
 			"mysql:host=" . $app['db']['servername'] . ";dbname=" . $app['db']['database'],
 			$app['db']['username'],

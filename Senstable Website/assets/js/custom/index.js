@@ -1,14 +1,16 @@
+
+
 const sens = document.getElementById("sens");
 
 //create a request variable 
-var request = new XMLHttpRequest();
+const request = new XMLHttpRequest();
 
 //open a new connection
-request.open("GET", "https://niekvanleeuwen.nl/senstable/api/sensors/get/", true);
+request.open("GET", "http://145.24.222.125/api/sensors/get/", true);
 
 request.onload = function() {
     //parse the object
-    var data = JSON.parse(this.response);
+    const data = JSON.parse(this.response);
     //handle errors
     if (request.status >= 200 && request.status < 400) {
         data.forEach(sensor => {
@@ -30,7 +32,7 @@ request.onload = function() {
             a1.setAttribute("href", "sensor.html?id=" + sensor.id);
 
             const img = document.createElement("img");
-            img.setAttribute("src", "admin/" + sensor.diagram);
+            img.setAttribute("src", sensor.diagram);
             img.setAttribute("class", "rounded shadow-3d hover-shadow-3d border mb-3 mb-md-0");
 
             a1.appendChild(img);

@@ -11,16 +11,20 @@ $token              = $json->token;
 $name               = $json->name;
 $short_description  = $json->short_description;
 $serial_number      = $json->serial_number;
+$diagram            = $json->diagram;
 $wiki               = $json->wiki;
 $code               = $json->code;
 
+
+
 // first check token
 if ($api->authenticate($token)) {
-    $sql = "INSERT INTO sensors (name, short_description, serial_number, wiki, code) VALUES (:name, :short_description, :serial_number, :wiki, :code)";
+    $sql = "INSERT INTO sensors (name, short_description, serial_number, diagram, wiki, code) VALUES (:name, :short_description, :serial_number, :diagram, :wiki, :code)";
     $param = array (
         "name" => $name,
         "short_description" => $short_description,
         "serial_number" => $serial_number,
+        "diagram" => $diagram,
         "wiki" => $wiki,
         "code" => $code,
     );
