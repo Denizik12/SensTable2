@@ -101,6 +101,8 @@ body {
   top: 5%;
   border: 1px solid #666;
   z-index: 1000;
+  padding-top: 20px;;
+  padding-bottom: 20px;
 }
 
 .form-content {
@@ -112,7 +114,7 @@ body {
   width: 75%;
 }
 
-.delete-sensor:hover, .edit-sensor:hover{
+.delete-sensor:hover, .edit-sensor:hover, .edit-code:hover, .show-code:hover{
   cursor: pointer;
 }
 

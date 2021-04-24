@@ -34,31 +34,29 @@ function loadSensorTable() {
                 const dateAdded = document.createElement("td");
                 dateAdded.textContent = sensor.date_added;
 
-                const deleteSensor = document.createElement("td");
+                const showCode = document.createElement("td");
                 let i_element = document.createElement('I');
-                i_element.className = "fas fa-trash-alt delete-sensor";
-                i_element.name = `delete-${sensor.id}`;
+                i_element.className = "fas far fa-eye show-code";
+                i_element.name = `show-${sensor.id}`;
                 i_element.onclick = function() {
-                    removeSensor(i_element.name.replace("delete-", ""));
+                    getTableData(i_element.name, "showCode");
                 };
-                deleteSensor.appendChild(i_element);
+                showCode.appendChild(i_element);
 
-                const editSensor = document.createElement("td");
+                const editCode = document.createElement("td");
                 i_element = document.createElement('I');
-                i_element.className = "fas fa-edit edit-sensor";
+                i_element.className = "fas fa-edit edit-code";
                 i_element.name = `${sensor.id}`;
                 i_element.onclick = function() {
-                    getTableData(i_element.name);
+                    getTableData(i_element.name, "editForm");
                 };
-                editSensor.appendChild(i_element);
+                editCode.appendChild(i_element);
 
                 entry.appendChild(id)
                 entry.appendChild(name);
-                entry.appendChild(description);
                 entry.appendChild(serialNumber);
-                entry.appendChild(dateAdded);
-                entry.appendChild(deleteSensor);
-                entry.appendChild(editSensor);
+                entry.appendChild(showCode);
+                entry.appendChild(editCode);
                 tbody.appendChild(entry);
             });
         }
@@ -73,70 +71,6 @@ function clearSensorTable() {
     for (let x = rowCount - 1; x > 0; x--) {
         myTable.deleteRow(x);
     }
-}
-
-document.getElementById("add-sensor").addEventListener("click", () => {
-    openForm();
-});
-
-function openForm() {
-    document.getElementById("popup-form").style.display = "block";
-}
-
-function closeForm() {
-    document.getElementById("popup-form").style.display = "none";
-}
-
-function removeSensor(sensorId) {
-    if (confirm(`Weet u zeker dat u deze sensor, #${sensorId}, wilt verwijderen?`)) {
-        let token = localStorage.getItem('token');
-        let data = {
-            "id": sensorId,
-            "token": token
-        };
-
-        let request = new XMLHttpRequest();
-        request.open("POST", urlSensorApi + "delete/", true);
-        request.setRequestHeader('Content-type', 'application/json');
-        request.send(JSON.stringify(data));
-
-        request.onload = function() {
-            let json = JSON.parse(request.responseText);
-            showResponse(json);
-        };
-    }
-}
-
-function addSensor() {
-    let request = new XMLHttpRequest();
-    let name = document.getElementById("sensName").value;
-    let serialNumber = document.getElementById("sensSerialNumber").value;
-    let diagram = document.getElementById("fileToBase64").value;
-    let shortDescription = document.getElementById("sensShortDescription").value;
-    let wiki = document.getElementById("sensWiki").value;
-    let code = document.getElementById("sensCode").value;
-    let token = localStorage.getItem('token');
-
-
-    let data = {
-        "name": name,
-        "short_description": shortDescription,
-        "serial_number": serialNumber,
-        "diagram": diagram,
-        "wiki": wiki,
-        "code": code,
-        "token": token
-    };
-
-    request.open("POST", urlSensorApi + "add/", true);
-    request.setRequestHeader('Content-type', 'application/json');
-    request.send(JSON.stringify(data));
-
-    request.onload = function() {
-        let json = JSON.parse(request.responseText);
-        showResponse(json);
-        closeForm();
-    };
 }
 
 function showResponse(json) {
@@ -154,7 +88,7 @@ function showResponse(json) {
     loadSensorTable();
 }
 
-function getTableData(id) {
+function getTableData(id, func) {
     let request = new XMLHttpRequest();
     //open a new connection
     request.open("POST", urlSensorApi + "get/", true);
@@ -169,11 +103,11 @@ function getTableData(id) {
         //parse the object
         let data = JSON.parse(this.responseText);
         openEditForm();
-
         let hd = document.getElementById("edit-form-header");
         hd.innerHTML = `${hd.innerHTML}${data[0]['id']}`;
 
         Object.keys(data[0]).forEach(function(key) {
+
             if (document.getElementById(`sens-${key}-edit`) !== null)
                 document.getElementById(`sens-${key}-edit`).value = data[0][key];
         });
@@ -187,11 +121,12 @@ function saveSensor() {
 
     let token = localStorage.getItem('token');
     let data = {
-        "id": document.getElementById('edit-form-header').innerHTML.replace("Sensor bewerken: #", ""),
-        "name": document.getElementById(`sens-name-edit`).value,
-        "short_description": document.getElementById(`sens-short_description-edit`).value,
-        "serial_number": document.getElementById(`sens-serial_number-edit`).value,
-        "wiki": document.getElementById(`sens-wiki-edit`).value,
+        "id": document.getElementById('edit-form-header').innerHTML.replace("Sensor code bewerken: #", ""),
+        "name": "",
+        "short_description": "",
+        "serial_number": "",
+        "diagram": "",
+        "wiki": "",
         "code": document.getElementById(`sens-code-edit`).value,
         "token": token
     };
@@ -207,10 +142,24 @@ function saveSensor() {
 
 function openEditForm() {
     document.getElementById("edit-popup-form").style.display = "block";
+    let hd = document.getElementById("edit-form-header");
+    hd.innerHTML = `Sensor code bewerken: #`;
 }
 
 function closeEditForm() {
     document.getElementById("edit-popup-form").style.display = "none";
     let hd = document.getElementById("edit-form-header");
-    hd.innerHTML = `Sensor bewerken: #`;
+    hd.innerHTML = `Sensor code bewerken: #`;
+}
+
+function test() {
+    window.alert("test");
+}
+
+function openCode() {
+    document.getElementById("show-code-popup").style.display = "block";
+}
+
+function closeCode() {
+    document.getElementById("show-code-popup").style.display = "none";
 }

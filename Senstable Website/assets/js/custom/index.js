@@ -1,5 +1,3 @@
-
-
 const sens = document.getElementById("sens");
 
 //create a request variable 
