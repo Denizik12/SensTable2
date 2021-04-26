@@ -4,7 +4,7 @@
 
     //check condition user login not direct back to index.php page
     if(isset($_SESSION["user_login"])){
-        include("sensors.php");
+        include("dashboard.php");
         exit();   
     }
 
@@ -43,7 +43,7 @@
                         if ($result) {
                             $_SESSION["user_login"] = $row["user_id"];	
                             $_SESSION["token"] = $token;
-                            include("sensors.php");
+                            include("dashboard.php");
                             exit();	
                         }else{
                             $errorMsg[]="Er is een fout opgetreden!";

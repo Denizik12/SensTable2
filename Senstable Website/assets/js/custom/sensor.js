@@ -11,7 +11,7 @@ let request = new XMLHttpRequest();
 let chart;
 let dataArr = [];
 let labels = [];
-let sock = new WebSocket("ws://185.224.91.138:5050"); //replace this address with the one the node.js server prints out. 
+let sock = new WebSocket("ws://145.24.222.125:8080"); //replace this address with the one the node.js server prints out.
 let graphPaused = false;
 
 // get the paramater given in the url
@@ -32,6 +32,7 @@ const jsonData = {
 // this function is called when the socket is connected
 sock.onopen = function(event) {
     buildChart();
+    removeError();
     // send the id from the sensor to the socket
     sock.send(JSON.stringify(jsonData));
 }
@@ -42,6 +43,11 @@ sock.onmessage = function(event) {
     if (graphPaused == false) {
         update(JSON.parse(event.data));
     }
+}
+
+// this function removes the error message, there is no sensor data, from the webpage.
+function removeError(){
+    document.getElementById("diagram-no-data").innerHTML = "";
 }
 
 // this function updates the graph

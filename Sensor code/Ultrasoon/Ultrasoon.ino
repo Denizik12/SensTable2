@@ -9,9 +9,9 @@ const char* host = "192.168.11.9";
 WiFiClient client;
 
 // Tijd tussen metingen
-const int sleepTimeMiliSeconds = 2000;
+const int sleepTimeMiliSeconds = 300;
 
-String sensor_type = "Ultrasoon";
+String sensor_type = "3";
 float sensor_value = 0;
 
 #define trigPin 16 //D0
@@ -27,8 +27,8 @@ void readSensor() {
 
   sensor_value = (pulseIn(echoPin, HIGH)) * 0.0343 / 2;
 
-  if (sensor_value > 100) {
-    sensor_value = 100;
+  if (sensor_value > 30) {
+    sensor_value = 0;
   }
 
   Serial.println(sensor_value);

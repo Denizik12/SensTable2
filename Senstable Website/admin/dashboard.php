@@ -70,8 +70,9 @@ if(!isset($_SESSION['user_login'])){
                 <i class="fas fa-plus-circle add-sensor" id="add-sensor"> Sensor toevoegen</i>
                 <p class="lbl-status" id="lbl-status"></p>
 
-                <!-- adding sensor-->
             </div>
+
+            <!-- adding sensor-->
             <div class="form-popup" id="popup-form">
                 <form method="post" enctype="multipart/form-data">
                     <h4 class="form-content">Sensor toevoegen</h4>

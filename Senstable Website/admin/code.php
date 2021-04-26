@@ -15,6 +15,7 @@ if (!isset($_SESSION['user_login'])) {
     <meta name="description" content="">
     <meta name="author" content="">
     <title>Dashboard | Senstable</title>
+    <link href="../assets/css/theme.css" rel="stylesheet" type="text/css" media="all"/>
     <style><?php include 'css/dashboard.css'; ?></style>
     <style><?php include 'css/bootstrap.min.css'; ?></style>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
@@ -102,18 +103,19 @@ if (!isset($_SESSION['user_login'])) {
 
                 <!-- show code-->
                 <div class="form-popup" id="show-code-popup">
-                    <form method="post" enctype="multipart/form-data">
-                        <h4 class="form-content" id="edit-form-header">Sensor code bewerken: #</h4>
+                        <h4 class="form-content" id="show-code-header">Sensor code: #</h4>
+                        <hr>
+                    <div id="show-code">
+                        <pre class="form-group">
+                            <code class="form-content language-arduino" id="sens-code"></code>
+                        </pre>
+                    </div>
 
-                        <div class="form-group">
-                            <p class="form-content">Sensor code:</p>
-                            <code name="sensCode" class="form-input form-content" id="sens-code-edit" rows="25"
-                                      placeholder="Voorbeeld code" required></code>
-                        </div>
+                    <br/>
+
                         <button type="button" name="cancel" class="btn btn-primary mb-1 form-content"
                                 onclick="closeCode()">Close
                         </button>
-                    </form>
                 </div>
                 <br/>
         </main>
@@ -135,6 +137,9 @@ if (!isset($_SESSION['user_login'])) {
 <script>
     feather.replace()
 </script>
+
+<!-- Prism (displays formatted code boxes) -->
+<script type="text/javascript" src="../assets/js/prism.js"></script>
 
 
 </body>

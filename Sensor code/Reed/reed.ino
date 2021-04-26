@@ -9,9 +9,9 @@ const char* host = "192.168.11.9";
 WiFiClient client;
 
 // Tijd tussen metingen
-const int sleepTimeMiliSeconds = 2000;
+const int sleepTimeMiliSeconds = 300;
 
-String sensor_type = "Reed";
+String sensor_type = "8";
 float sensor_value = 0;
 
 #define sensor_pin 16  //D0

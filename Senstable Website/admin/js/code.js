@@ -39,7 +39,7 @@ function loadSensorTable() {
                 i_element.className = "fas far fa-eye show-code";
                 i_element.name = `show-${sensor.id}`;
                 i_element.onclick = function() {
-                    getTableData(i_element.name, "showCode");
+                    getCodeData(i_element.name);
                 };
                 showCode.appendChild(i_element);
 
@@ -48,7 +48,7 @@ function loadSensorTable() {
                 i_element.className = "fas fa-edit edit-code";
                 i_element.name = `${sensor.id}`;
                 i_element.onclick = function() {
-                    getTableData(i_element.name, "editForm");
+                    getTableData(i_element.name);
                 };
                 editCode.appendChild(i_element);
 
@@ -88,7 +88,7 @@ function showResponse(json) {
     loadSensorTable();
 }
 
-function getTableData(id, func) {
+function getTableData(id) {
     let request = new XMLHttpRequest();
     //open a new connection
     request.open("POST", urlSensorApi + "get/", true);
@@ -141,6 +141,9 @@ function saveSensor() {
 }
 
 function openEditForm() {
+    // if code is shown this will close is
+    closeCode()
+
     document.getElementById("edit-popup-form").style.display = "block";
     let hd = document.getElementById("edit-form-header");
     hd.innerHTML = `Sensor code bewerken: #`;
@@ -152,14 +155,47 @@ function closeEditForm() {
     hd.innerHTML = `Sensor code bewerken: #`;
 }
 
-function test() {
-    window.alert("test");
+function getCodeData(id) {
+    let request = new XMLHttpRequest();
+    //open a new connection
+    request.open("POST", urlSensorApi + "get/", true);
+    request.setRequestHeader('Content-type', 'application/json');
+
+    let data = {
+        "id": id,
+    };
+    request.send(JSON.stringify(data));
+
+    request.onload = function() {
+        //parse the object
+        let data = JSON.parse(this.responseText);
+        openCode();
+        let hd = document.getElementById("show-code-header");
+
+        hd.innerHTML = `${hd.innerHTML}${data[0]['id']}`;
+
+        Object.keys(data[0]).forEach(function(key) {
+
+            if (document.getElementById(`sens-${key}`) !== null) {
+                document.getElementById(`sens-${key}`).innerHTML = "\n" + data[0][key];
+                Prism.highlightAll();
+            }
+        });
+
+    }
 }
 
 function openCode() {
+    //if edit form is open, this will close it
+    closeEditForm();
+
     document.getElementById("show-code-popup").style.display = "block";
+    let hd = document.getElementById("show-code-header");
+    hd.innerHTML = `Sensor code: #`;
 }
 
 function closeCode() {
     document.getElementById("show-code-popup").style.display = "none";
+    let hd = document.getElementById("show-code-header");
+    hd.innerHTML = `Sensor code: #`;
 }

@@ -1,3 +1,4 @@
+// Webpagina opzetten
 sudo apt-get update
 
 sudo apt-get install apache2
@@ -6,6 +7,8 @@ sudo apt-get install php
 
 sudo apt-get install libapache2-mod-php
 
+
+// Database opzetten
 sudo apt-get install mysql-server mysql-client
 // root account maken
 sudo mysql_secure_installation
@@ -16,3 +19,15 @@ sudo mysql -u root -p
 	FLUSH PRIVILEGES;
 
 sudo apt-get install phpmyadmin
+
+// Nodejs server opzetten voor communicatie tussen website en ESP
+sudo apt-get install curl
+curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
+
+sudo apt-get install nodejs
+
+sudo apt install npm
+
+npm install body-parser
+npm install express
+npm install ws
