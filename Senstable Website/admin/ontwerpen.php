@@ -63,76 +63,56 @@ if(!isset($_SESSION['user_login'])){
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <h2>Ontwerpen</h2>
+            <h2>Code</h2>
             <div class="table-responsive">
                 <table class="table table-striped table-sm" id="sensorTable">
                     <thead>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Naam</th>
-                        <th scope="col">Beschrijving</th>
                         <th scope="col">Serienummer</th>
-                        <th scope="col">Datum toegevoegd</th>
                         <th scope="col"></th>
                         <th scope="col"></th>
                     </tr>
                     </thead>
                     <tbody id="table"></tbody>
                 </table>
-                <i class="fas fa-plus-circle add-sensor" id="add-sensor"></i>
                 <p class="lbl-status" id="lbl-status"></p>
 
-                <!-- adding sensor-->
-            </div>
-            <div class="form-popup" id="popup-form">
-                <form method="post" enctype="multipart/form-data">
-                    <h4 class="form-content">Sensor toevoegen</h4>
-                    <hr>
+                <!-- edit sensor diagram form -->
+                <div class="form-popup" id="edit-popup-form">
+                    <form method="post" enctype="multipart/form-data">
+                        <h4 class="form-content" id="edit-form-header">Sensor diagram bewerken: #</h4>
+                        <hr>
 
-                    <input type="text" class="form-input form-content" id="sensName" name="sensName" placeholder="Naam van de sensor" required>
-                    <input type="text" class="form-input form-content" id="sensSerialNumber" name="sensSerialNumber" placeholder="Serienummer (bijv. HC-SR04)" required>
-                    <hr>
+                        <div class="form-group">
+                            <p class="form-content" id="which-diagram">Oude diagram:</p>
+                            <img src="" id="sens-diagram-edit" alt="diagram">
 
-                    <p class="form-content">Diagram</p>
-                    <input type="file" class="form-control-file form-content" id="fileToUpload" name="fileToUpload" required>
-                    <input type="text" id="fileToBase64" hidden>   <!-- Base64 string is being saved here, to further use in the API -->
-                    <hr>
+                            <input type="file" class="form-control-file form-content" id="fileToUpload" name="fileToUpload" required>
+                        </div>
+                        <button type="button" name="btn_save" class="btn btn-primary mb-1 form-content"
+                                onclick="saveSensor()">Opslaan
+                        </button>
+                        <button type="button" name="cancel" class="btn btn-cancel mb-1 form-content"
+                                onclick="closeEditForm()">Annuleren
+                        </button>
+                    </form>
+                </div>
 
-                    <textarea class="form-input form-content" id="sensShortDescription" rows="2" name="sensShortDescription" placeholder="Korte beschrijving (max 100 karakters)" required></textarea>
-                    <textarea name="sensWiki" class="form-input form-content" id="sensWiki" rows="5" placeholder="Beschrijving over de sensor" required></textarea>
-                    <br>
-                    <div class="form-group">
-                        <textarea name="sensCode" class="form-input form-content" id="sensCode" rows="5" placeholder="Voorbeeld code" required></textarea>
+                <!-- show code-->
+                <div class="form-popup" id="show-diagram-popup">
+                    <h4 class="form-content" id="show-diagram-header">Sensor diagram: #</h4>
+                    <hr>
+                    <div id="show-diagram">
+                        <img src="" id="sens-diagram" alt="diagram">
                     </div>
-                    <button type="button" name="addSensorButton" class="btn btn-primary mb-1 form-content" onclick="addSensor()">Toevoegen</button>
-                    <button type="button" name="cancel" class="btn btn-cancel mb-1 form-content" onclick="closeForm()">Annuleren</button>
-                </form>
-            </div>
 
-            <!-- edit sensor entry form -->
-            <div class="form-popup" id="edit-popup-form">
-                <form method="post" enctype="multipart/form-data">
-                    <h4 class="form-content" id="edit-form-header">Sensor bewerken: #</h4>
-                    <hr>
-
-                    <input type="text" class="form-input form-content" id="sens-name-edit" name="sensName" placeholder="Naam van de sensor" required>
-                    <input type="text" class="form-input form-content" id="sens-serial_number-edit" name="sensSerialNumber" placeholder="Serienummer (bijv. HC-SR04)" required>
-                    <hr>
-
-                    <input type="file" class="form-control-file form-content" id="sens-diagra-edit" name="fileToUpload" required>
-                    <hr>
-
-                    <textarea class="form-input form-content" id="sens-short_description-edit" rows="2" name="sensShortDescription" placeholder="Korte beschrijving (max 100 karakters)" required></textarea>
-                    <textarea name="sensWiki" class="form-input form-content" id="sens-wiki-edit" rows="5" placeholder="Beschrijving over de sensor" required></textarea>
-                    <br>
-                    <div class="form-group">
-                        <textarea name="sensCode" class="form-input form-content" id="sens-code-edit" rows="5" placeholder="Voorbeeld code" required></textarea>
-                    </div>
-                    <button type="button" name="btn_save" class="btn btn-primary mb-1 form-content" onclick="saveSensor()">Opslaan</button>
-                    <button type="button" name="cancel" class="btn btn-cancel mb-1 form-content" onclick="closeEditForm()">Annuleren</button>
-                </form>
-            </div>
-            <br />
+                    <button type="button" name="cancel" class="btn btn-primary mb-1 form-content"
+                            onclick="closeDiagram()">Close
+                    </button>
+                </div>
+                <br/>
         </main>
     </div>
 </div>
@@ -144,7 +124,7 @@ if(!isset($_SESSION['user_login'])){
     let token ='<?php echo $_SESSION["token"];?>';
     localStorage.setItem('token', token);
     <?php
-    include 'js/sensors.js';
+    include 'js/ontwerpen.js';
     ?>
 </script>
 <!-- Icons -->
@@ -161,12 +141,14 @@ if(!isset($_SESSION['user_login'])){
 
         reader.addEventListener("load", () => {
             console.log(reader.result);
-            const fileToBase64 = document.getElementById("fileToBase64");
-            fileToBase64.value = reader.result;
+            const fileToBase64 = document.getElementById("sens-diagram-edit");
+            fileToBase64.src = reader.result;
 
         });
 
         reader.readAsDataURL(this.files[0]);
+
+        document.getElementById("which-diagram").innerHTML = "Nieuwe diagram";
     });
 </script>
 

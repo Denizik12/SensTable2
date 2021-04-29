@@ -119,7 +119,7 @@ body {
     width: 75%;
 }
 
-.delete-sensor:hover, .edit-sensor:hover, .edit-code:hover, .show-code:hover {
+.delete-sensor:hover, .edit-sensor:hover, .edit-code:hover, .show-code:hover, .show-diagram:hover {
     cursor: pointer;
 }
 
@@ -144,4 +144,9 @@ body {
 
 pre {
     height: 100%;
+}
+
+#sens-diagram, #sens-diagram-edit {
+    width: 75%;
+    margin-left: 13%;
 }

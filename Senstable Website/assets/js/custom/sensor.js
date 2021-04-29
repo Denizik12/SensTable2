@@ -33,6 +33,7 @@ const jsonData = {
 sock.onopen = function(event) {
     buildChart();
     removeError();
+
     // send the id from the sensor to the socket
     sock.send(JSON.stringify(jsonData));
 }
