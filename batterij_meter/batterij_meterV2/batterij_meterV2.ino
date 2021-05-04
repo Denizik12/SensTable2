@@ -2,7 +2,8 @@
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);    // set the LCD address to 0x27 for a 16x2
 
-#define MAX_VOLTAGE 7.20    // Set the maximum voltage of the battery
+#define MAX_VOLTAGE 4.20    // Set the maximum voltage of the battery
+#define MIN_VOLTAGE 2.50    // Set the minimum voltage of the battery
 
 void setup() {
   Serial.begin(9600);    // Begin the serial monitor
@@ -21,7 +22,7 @@ float volt() {
 
 int percentageBattery(float voltage) {
   int percentage;
-  int percentageCalculation = ((voltage / MAX_VOLTAGE) * 100.00);    // Calculate the percentage
+  int percentageCalculation = (((voltage - MIN_VOLTAGE) / (MAX_VOLTAGE - MIN_VOLTAGE)) * 100.00);    // Calculate the percentage
 
   // Return the correct value for the percentage
   if (voltage >= MAX_VOLTAGE) {
@@ -64,7 +65,7 @@ void lcdDisplay() {
 void refreshDisplay() {
   unsigned long currentTime = millis();
   static unsigned long previousTime = 0;
-  const unsigned long interval = 60000; //    Every 1 minute
+  const unsigned long interval = 600; //    Every 1 minute
   if (currentTime - previousTime >= interval) {
     previousTime += interval;
     lcdDisplay();
