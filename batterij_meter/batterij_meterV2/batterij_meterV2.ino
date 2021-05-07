@@ -2,8 +2,8 @@
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);    // set the LCD address to 0x27 for a 16x2
 
-#define MAX_VOLTAGE 4.20    // Set the maximum voltage of the battery
-#define MIN_VOLTAGE 2.50    // Set the minimum voltage of the battery
+#define MAX_VOLTAGE 4.18    // Set the maximum voltage of the battery
+#define MIN_VOLTAGE 3.10    // Set the minimum voltage of the battery
 
 void setup() {
   Serial.begin(9600);    // Begin the serial monitor
@@ -16,7 +16,9 @@ void loop() {
 
 float volt() {
   int inputValue = analogRead(A0);    // Read the A0 pin value
-  float voltage = inputValue * (5.00 / 1023.00) * 1.94;    // Convert the value to a true voltage numbers.
+  Serial.println(inputValue);
+  float voltage = inputValue * (5.00 / 1023.00) * 1.82;    // Convert the value to a true voltage numbers.
+  Serial.println(voltage);
   return voltage;
 }
 
