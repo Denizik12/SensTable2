@@ -31,7 +31,9 @@ void loop() {
     lcd.print("Aan het opladen ");
     lcd.setCursor(0, 1);
     lcd.print("                ");
+    Serial.println("HIGH");
   } else {
+    Serial.println("LOW");
     refreshDisplay();    // Print the values on the lcd
     sampleCount = 0;
     sum = 0;
@@ -47,7 +49,7 @@ float volt() {
     delay(10);
   }
   voltage = ((float)sum / (float)NUM_SAMPLES * 5.015) / 1024.0;
-  float result = voltage * 11.2;
+  float result = voltage * 11.4;
   return result;
 }
 
@@ -77,6 +79,7 @@ String bericht(int percentage) {
 
 // Print function for the values
 void lcdDisplay() {
+  lcd.backlight();
   lcd.setCursor(0, 0);
   lcd.print(volt());
   lcd.print("V");
