@@ -49,7 +49,7 @@ float volt() {
     delay(10);
   }
   voltage = ((float)sum / (float)NUM_SAMPLES * 5.015) / 1024.0;
-  float result = voltage * 11.4;
+  float result = voltage * 11.45;
   return result;
 }
 
