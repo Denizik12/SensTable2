@@ -11,7 +11,7 @@ let request = new XMLHttpRequest();
 let chart;
 let dataArr = [];
 let labels = [];
-let sock = new WebSocket("ws://145.24.222.125:8080"); //replace this address with the one the node.js server prints out.
+let sock = new WebSocket("ws://145.24.222.125:8789"); //replace this address with the one the node.js server prints out.
 let graphPaused = false;
 
 // get the paramater given in the url
@@ -127,7 +127,7 @@ request.onreadystatechange = function() {
             data.forEach(sensor => {
                 title.textContent = title2.textContent = sensor.name;
                 shortDescription.textContent = sensor.short_description;
-                description.textContent = sensor.wiki;
+                description.innerHTML = sensor.wiki;
                 code.innerHTML = "\n" + sensor.code;
                 img.setAttribute("src", sensor.diagram);
                 // Rerun Prism syntax highlighting on the current page
