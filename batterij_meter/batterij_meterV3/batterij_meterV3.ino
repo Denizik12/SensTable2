@@ -31,9 +31,9 @@ void loop() {
     lcd.print("Aan het opladen ");
     lcd.setCursor(0, 1);
     lcd.print("                ");
-    Serial.println("HIGH");
+    //Serial.println("HIGH");
   } else {
-    Serial.println("LOW");
+    //Serial.println("LOW");
     refreshDisplay();    // Print the values on the lcd
     sampleCount = 0;
     sum = 0;
@@ -48,9 +48,8 @@ float volt() {
     sampleCount++;
     delay(10);
   }
-  voltage = ((float)sum / (float)NUM_SAMPLES * 5.015) / 1024.0;
-  float result = voltage * 11.45;
-  result = (float)((int)(result * 10)/10);
+  voltage = ((float)sum / (float)NUM_SAMPLES * 5.0) / 1024.0;
+  float result = voltage * 11.715;
   return result;
 }
 
@@ -103,7 +102,7 @@ void lcdClear() {
 void refreshDisplay() {
   unsigned long currentTime = millis();
   static unsigned long previousTime = 0;
-  const unsigned long interval = 1000; //    Every 1 minute
+  const unsigned long interval = 500; //    Every 1 minute
   if (currentTime - previousTime >= interval) {
     previousTime += interval;
     lcdDisplay();
