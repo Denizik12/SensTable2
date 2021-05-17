@@ -9,12 +9,12 @@ const char* host = "192.168.11.9";
 WiFiClient client;
 
 // Tijd tussen metingen
-const int sleepTimeMiliSeconds = 300;
+const int sleepTimeMiliSeconds = 500;
 
-String sensor_type = "9";
+String sensor_type = "8";
 float sensor_value = 0;
 
-#define sensor_pin 5  //D0
+#define sensor_pin 16  //D0
 
 void readSensor() {
   sensor_value = (float)!digitalRead(sensor_pin);
@@ -58,6 +58,9 @@ void loop() {
 //      Serial.print(line);
 //    }
 //    Serial.println();
+  } else {
+    WiFi.disconnect();
+    setup();
   }
   delay(sleepTimeMiliSeconds);
 }

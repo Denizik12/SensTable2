@@ -12,8 +12,8 @@ IPAddress ip(192, 168, 11, 9); // arbitrary IP address (doesn't conflict w/ loca
 IPAddress gateway(192, 168, 11, 1);
 IPAddress subnet(255, 255, 255, 0);
 
-String sensor_type = "";
-float sensor_value = 0.0;
+String sensor_type = "8";
+float sensor_value = 6.0;
 
 // data to server
 boolean handshakeFailed = 0;
@@ -22,24 +22,18 @@ char path[] = "/";   //identifier of this device
 const char* ssid     = "Z-ArcherC1200 2.4";
 const char* password = "meekeren69420";
 char* host = "145.24.222.125";  //replace this ip address with the ip address of your Node.Js server
-const int espport = 8080;
+const int espport = 8789;
 
 WebSocketClient webSocketClient;
-unsigned long previousMillis = 0;
-unsigned long currentMillis;
-unsigned long interval = 300; //interval for sending data to the websocket server in ms
 // Use WiFiClient class to create TCP connections
 WiFiClient client;
-
-
-
 
 void setup() {
   Serial.begin(115200);
   Serial.println();
 
   WiFi.softAPConfig(ip, gateway, subnet);
-  WiFi.softAP(ssid_ap, password_ap, 1, false, 8);
+  WiFi.softAP(ssid_ap, password_ap, 1, false, 6);
   Serial.print("Setting AP (Access Point)…");
 
   IPAddress IP = WiFi.softAPIP();
@@ -75,6 +69,22 @@ void setup() {
 
 void loop() {
   server.handleClient();
+
+  if (client.connected()) {
+      String json = F("{ \"sensor\":{ \"id\": ");
+      String jsonMiddle = ", \"value\": ";
+      String jsonEnd = "} }";
+
+
+      data[0] = sensor_value; //read adc values, this will give random value, since no sensor is connected.
+
+
+      String finalJson = json + sensor_type + jsonMiddle + data[0] + jsonEnd;
+      Serial.println(finalJson);
+      //For this project we are pretending that these random values are sensor values
+      webSocketClient.sendData(finalJson);//send sensor data to websocket server
+    }
+  delay(1000);
 }
 
 void handleRoot() {
@@ -104,7 +114,6 @@ void handleUpdate() {
       webSocketClient.sendData(finalJson);//send sensor data to websocket server
     }
   }
-
 
 
 //***************function definitions**********************************************************************************

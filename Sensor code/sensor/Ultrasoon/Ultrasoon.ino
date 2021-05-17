@@ -9,21 +9,34 @@ const char* host = "192.168.11.9";
 WiFiClient client;
 
 // Tijd tussen metingen
-const int sleepTimeMiliSeconds = 300;
+const int sleepTimeMiliSeconds = 500;
 
-String sensor_type = "8";
+String sensor_type = "3";
 float sensor_value = 0;
 
-#define sensor_pin 16  //D0
+#define trigPin 16 //D0
+#define echoPin 5  //D1
 
 void readSensor() {
-  sensor_value = (float)!digitalRead(sensor_pin);
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(5);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  sensor_value = (pulseIn(echoPin, HIGH)) * 0.0343 / 2;
+
+  if (sensor_value > 30) {
+    sensor_value = 0;
+  }
 
   Serial.println(sensor_value);
 }
 
 void setupSensor() {
-  pinMode(sensor_pin, INPUT);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
 }
 
 void setup() {
@@ -52,12 +65,12 @@ void loop() {
     delay(10);
     // Read all the lines of the response and print them to Serial
     // Alleen gebruiken om connectie te testen
-//    Serial.println("Response: ");
-//    while (client.available()) {
-//      String line = client.readStringUntil('\r');
-//      Serial.print(line);
-//    }
-//    Serial.println();
+//        Serial.println("Response: ");
+//        while (client.available()) {
+//          String line = client.readStringUntil('\r');
+//          Serial.print(line);
+//        }
+//        Serial.println();
   }
   delay(sleepTimeMiliSeconds);
 }
