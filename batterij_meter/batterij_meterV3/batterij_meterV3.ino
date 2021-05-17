@@ -50,6 +50,7 @@ float volt() {
   }
   voltage = ((float)sum / (float)NUM_SAMPLES * 5.015) / 1024.0;
   float result = voltage * 11.45;
+  result = (float)((int)(result * 10)/10);
   return result;
 }
 
