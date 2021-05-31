@@ -3,8 +3,8 @@
 LiquidCrystal_I2C lcd(0x27, 20, 4);    // set the LCD address to 0x27 for a 16x2
 
 #define NUM_SAMPLES 10    // Number of analog samples to take per reading
-#define MIN_VOLTAGE 3.10   // Set the minimum work voltage of the battery
-#define MAX_VOLTAGE 4.18   // Set the maximum work voltage of the battery
+#define MIN_VOLTAGE 3.00   // Set the minimum work voltage of the battery
+#define MAX_VOLTAGE 4.20   // Set the maximum work voltage of the battery
 
 int sum = 0;    // Sum of samples taken
 unsigned char sampleCount = 0;    // Sample number
@@ -25,20 +25,19 @@ void setup() {
 
 void loop() {
 
-  if (digitalRead(chargePin) == HIGH) {
-    lcd.backlight();
-    lcd.setCursor(0, 0);
-    lcd.print("Aan het opladen ");
-    lcd.setCursor(0, 1);
-    lcd.print("                ");
-    //Serial.println("HIGH");
-  } else {
-    //Serial.println("LOW");
-    refreshDisplay();    // Print the values on the lcd
-    sampleCount = 0;
-    sum = 0;
-  }
-
+    if (digitalRead(chargePin) == HIGH) {
+      lcd.backlight();
+      lcd.setCursor(0, 0);
+      lcd.print("Aan het opladen ");
+      lcd.setCursor(0, 1);
+      lcd.print("                ");
+      //Serial.println("HIGH");
+    } else {
+      //Serial.println("LOW");
+      refreshDisplay();    // Print the values on the lcd
+      sampleCount = 0;
+      sum = 0;
+    }
 }
 
 float volt() {
@@ -49,7 +48,8 @@ float volt() {
     delay(10);
   }
   voltage = ((float)sum / (float)NUM_SAMPLES * 5.0) / 1024.0;
-  float result = voltage * 11.715;
+  //float result = voltage / (100000/1100000); // (R2 / (R1 + R2))
+  float result = voltage * 11.5;
   return result;
 }
 
@@ -59,6 +59,8 @@ int percentageBattery(float voltage) {
   // Return the correct value for the percentage
   if (voltage >= MAX_VOLTAGE) {
     percentage = 99;
+  } else if (voltage < MIN_VOLTAGE) {
+    percentage = 0;
   } else {
     percentage = percentageCalculation;
   }
