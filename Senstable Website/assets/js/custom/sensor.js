@@ -14,6 +14,9 @@ let labels = [];
 let sock = new WebSocket("ws://145.24.222.125:8789"); //replace this address with the one the node.js server prints out.
 let graphPaused = false;
 
+let sensorPhysicalQuantity = "";
+let sensorUnit = "";
+
 // get the paramater given in the url
 let parts = window.location.search.substr(1).split("&");
 let get = {};
@@ -22,7 +25,7 @@ for (let i = 0; i < parts.length; i++) {
     get[decodeURIComponent(temp[0])] = decodeURIComponent(temp[1]);
 }
 const id = get['id'];
-const data = JSON.stringify({ "id": id });
+const data = JSON.stringify({"id": id});
 const jsonData = {
     "client": {
         "id": id
@@ -30,16 +33,13 @@ const jsonData = {
 }
 
 // this function is called when the socket is connected
-sock.onopen = function(event) {
-    buildChart();
-    removeError();
-
+sock.onopen = function (event) {
     // send the id from the sensor to the socket
     sock.send(JSON.stringify(jsonData));
 }
 
-// // this function is called on every messaged received from the server
-sock.onmessage = function(event) {
+// this function is called on every messaged received from the server
+sock.onmessage = function (event) {
     // update the graph with the new data
     if (graphPaused == false) {
         update(JSON.parse(event.data));
@@ -47,7 +47,7 @@ sock.onmessage = function(event) {
 }
 
 // this function removes the error message, there is no sensor data, from the webpage.
-function removeError(){
+function removeError() {
     document.getElementById("diagram-no-data").innerHTML = "";
 }
 
@@ -59,6 +59,15 @@ function update(json) {
     }
     labels.push(json["sensor"]["timeStamp"]);
     dataArr.push(json["sensor"]["value"]);
+
+    //update physical quantity
+    if (sensorPhysicalQuantity == "") {
+        sensorPhysicalQuantity = json["sensor"]["physicalQuantity"];
+        sensorUnit = json["sensor"]["unit"];
+        buildChart();
+        removeError();
+    }
+
     chart.update();
 }
 
@@ -88,37 +97,46 @@ function pauseGraph() {
 function buildChart() {
     var ctx = document.getElementById('myChart').getContext('2d');
     chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Sensor waarde",
-                backgroundColor: 'rgb(129, 198, 2228)',
-                borderColor: "#48BF84",
-                fill: false,
-                data: dataArr
-            }]
-        },
-        options: {
-            responsive: 'true',
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: sensorPhysicalQuantity + " (in " + sensorUnit + ")",
+                        backgroundColor: 'rgb(129, 198, 2228)',
+                        borderColor: "#48BF84",
+                        fill: false,
+                        data: dataArr
                     }
-                }]
+                ]
             },
-            tooltips: {
-                enabled: false
-            },
+            options: {
+                responsive: 'true',
+                scales: {
+                    yAxes: [
+                        {
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }
+                    ]
+                },
+                tooltips: {
+                    callbacks: {
+                        // shows sensor data with correct unit
+                        label: (item) => sensorPhysicalQuantity + ": " + item.yLabel + " " + sensorUnit
+                    }
+                }
+            }
         }
-    });
+    )
+    ;
 }
 
 request.open("POST", url, true);
 request.setRequestHeader("Content-Type", "application/json");
 
-request.onreadystatechange = function() {
+request.onreadystatechange = function () {
     if (request.readyState === 4 && request.status === 200) {
         //parse the object
         var data = JSON.parse(request.response);
