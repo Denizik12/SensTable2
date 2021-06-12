@@ -96,13 +96,20 @@ function pauseGraph() {
 
 function buildChart() {
     var ctx = document.getElementById('myChart').getContext('2d');
+
+    // shows correct text when there is no unit
+    var datasetLabel = sensorPhysicalQuantity;
+    if (sensorUnit !== "") {
+        datasetLabel = sensorPhysicalQuantity + " (in " + sensorUnit + ")";
+    }
+
     chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [
                     {
-                        label: sensorPhysicalQuantity + " (in " + sensorUnit + ")",
+                        label: datasetLabel,
                         backgroundColor: 'rgb(129, 198, 2228)',
                         borderColor: "#48BF84",
                         fill: false,
@@ -129,8 +136,7 @@ function buildChart() {
                 }
             }
         }
-    )
-    ;
+    );
 }
 
 request.open("POST", url, true);
