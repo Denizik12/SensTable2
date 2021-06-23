@@ -21,13 +21,11 @@ sudo mysql -u root -p
 sudo apt-get install phpmyadmin
 
 // Nodejs server opzetten voor communicatie tussen website en ESP
-sudo apt-get install curl
-curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
 
 sudo apt-get install nodejs
 
 sudo apt install npm
 
-npm install body-parser
-npm install express
-npm install ws
+sudo npm install body-parser
+sudo npm install express
+sudo npm install ws

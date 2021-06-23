@@ -11,15 +11,15 @@ WiFiClient client;
 // Tijd tussen metingen
 const int sleepTimeMiliSeconds = 300;
 
-String sensorId = "8";
-float sensorValue = 0;
-String physicalQuantity = "Reed";
-String unit = "";
+String sensorId = "7";
+float sensorValue = 90;
+String physicalQuantity = "test";
+String unit = "test123";
 
 #define sensorPin 16  //D0
 
 void readSensor() {
-  sensorValue = (float)!digitalRead(sensorPin);
+
 
   Serial.println(sensorValue);
 }
