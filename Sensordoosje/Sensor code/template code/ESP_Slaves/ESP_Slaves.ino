@@ -11,15 +11,15 @@ WiFiClient client;
 // Tijd tussen metingen
 const int sleepTimeMiliSeconds = 300;
 
-String sensorId = "7";
-float sensorValue = 90;
-String physicalQuantity = "test";
-String unit = "test123";
+String sensorId = "sensorId";
+String sensorType = "sensorType";
+float sensorValue = 0;
+String physicalQuantity = "physicalQuantity";
+String unit = "unit";
 
 #define sensorPin 16  //D0
 
 void readSensor() {
-
 
   Serial.println(sensorValue);
 }
@@ -48,6 +48,8 @@ void loop() {
     readSensor();
     String url = "update.php?sensorId=";
     url += String(sensorId);
+    url += "&sensorType=";
+    url += String(sensorType);
     url += "&sensorValue=";
     url += String(sensorValue);
     url += "&physicalQuantity=";
@@ -58,8 +60,7 @@ void loop() {
     client.flush();
     client.stop();
   } else {
-    WiFi.disconnect();
-    setup();
+    ESP.restart();
   }
   delay(sleepTimeMiliSeconds);
 }

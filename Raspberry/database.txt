@@ -1,0 +1,82 @@
+-- phpMyAdmin SQL Dump
+-- version 4.6.6deb5
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Jun 14, 2021 at 02:32 AM
+-- Server version: 10.3.27-MariaDB-0+deb10u1
+-- PHP Version: 7.3.27-1~deb10u1
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+--
+-- Database: `senstable`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `outputs`
+--
+
+CREATE TABLE `outputs` (
+  `id` int(11) NOT NULL,
+  `outputType` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `relations`
+--
+
+CREATE TABLE `relations` (
+  `sensorId` int(11) NOT NULL,
+  `outputId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sensoren`
+--
+
+CREATE TABLE `sensoren` (
+  `id` int(11) NOT NULL,
+  `sensorType` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `outputs`
+--
+ALTER TABLE `outputs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `relations`
+--
+ALTER TABLE `relations`
+  ADD KEY `sensorId` (`sensorId`),
+  ADD KEY `outputId` (`outputId`);
+
+--
+-- Indexes for table `sensoren`
+--
+ALTER TABLE `sensoren`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `relations`
+--
+ALTER TABLE `relations`
+  ADD CONSTRAINT `relations_ibfk_1` FOREIGN KEY (`sensorId`) REFERENCES `sensoren` (`id`),
+  ADD CONSTRAINT `relations_ibfk_2` FOREIGN KEY (`outputId`) REFERENCES `outputs` (`id`);

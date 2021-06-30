@@ -12,12 +12,15 @@ WiFiClient client;
 const int sleepTimeMiliSeconds = 300;
 
 String sensorId = "3";
+String sensorType = "Ultrasoon";
 float sensorValue = 0;
 String physicalQuantity = "Distance";
 String unit = "cm";
 
-#define trigPin 16 //D0
-#define echoPin 5  //D1
+#define echoPin 16    //D0
+#define trigPin 5     //D1
+#define greenLED 4    //D2
+#define redLED 0      //D3
 
 void readSensor() {
   digitalWrite(trigPin, LOW);
@@ -47,6 +50,11 @@ void setup() {
   WiFi.begin(ssid, password);
   Serial.begin(115200);
   setupSensor();
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+
+  digitalWrite(redLED, HIGH);
+  digitalWrite(greenLED, LOW);
 
   // wacht totdat er een WiFi connectie is
   while (WiFi.status() != WL_CONNECTED) {
@@ -59,9 +67,13 @@ void setup() {
 
 void loop() {
   if (client.connect(host, 80)) {
+    digitalWrite(redLED, LOW);
+    digitalWrite(greenLED, HIGH);
     readSensor();
     String url = "update.php?sensorId=";
     url += String(sensorId);
+    url += "&sensorType=";
+    url += String(sensorType);
     url += "&sensorValue=";
     url += String(sensorValue);
     url += "&physicalQuantity=";
@@ -72,8 +84,7 @@ void loop() {
     client.flush();
     client.stop();
   } else {
-    WiFi.disconnect();
-    setup();
+    ESP.restart();
   }
   delay(sleepTimeMiliSeconds);
 }
