@@ -11,29 +11,97 @@ const char* password = "Senstable2";
 char* host = "192.168.4.1";  //replace this ip address with the ip address of your Node.Js server
 const int espport = 5050;
 
-String outputId = "OutputId";
-String outputType = "OutputType";
+String outputId = "3";
+String outputType = "LEDStrip";
 
-#define outputPin 16  //D0
-#define greenLED 4    //D2
-#define redLED 0      //D3
+#define greenLED 13    //D7
+#define redLED 15      //D8
+
+#define led1 16        //D0
+#define led2 5         //D1
+#define led3 4         //D2
+#define led4 0         //D3
+#define led5 2         //D4
+#define led6 14        //D5
 
 WebSocketClient webSocketClient;
 // Use WiFiClient class to create TCP connections
 WiFiClient client;
 
 void setupOutput() {
-  pinMode(outputPin, OUTPUT);
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
+  pinMode(led4, OUTPUT);
+  pinMode(led5, OUTPUT);
+  pinMode(led6, OUTPUT);
+
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, LOW);
+  digitalWrite(led3, LOW);
+  digitalWrite(led4, LOW);
+  digitalWrite(led5, LOW);
+  digitalWrite(led6, LOW);
 }
 
-void updateOutput(int sensorValue) {
-//  Do something with sensorValue
+void updateOutput(float sensorValue) {
+  if (sensorValue == 0) {
+    digitalWrite(led1, LOW);
+    digitalWrite(led2, LOW);
+    digitalWrite(led3, LOW);
+    digitalWrite(led4, LOW);
+    digitalWrite(led5, LOW);
+    digitalWrite(led6, LOW);
+  } else if (sensorValue > 0 && sensorValue < 5) {
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, LOW);
+    digitalWrite(led3, LOW);
+    digitalWrite(led4, LOW);
+    digitalWrite(led5, LOW);
+    digitalWrite(led6, LOW);
+  } else if (sensorValue >= 5 && sensorValue < 10) {
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, HIGH);
+    digitalWrite(led3, LOW);
+    digitalWrite(led4, LOW);
+    digitalWrite(led5, LOW);
+    digitalWrite(led6, LOW);
+  } else if (sensorValue >= 10 && sensorValue < 15) {
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, HIGH);
+    digitalWrite(led3, HIGH);
+    digitalWrite(led4, LOW);
+    digitalWrite(led5, LOW);
+    digitalWrite(led6, LOW);
+  } else if (sensorValue >= 15 && sensorValue < 20) {
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, HIGH);
+    digitalWrite(led3, HIGH);
+    digitalWrite(led4, HIGH);
+    digitalWrite(led5, LOW);
+    digitalWrite(led6, LOW);
+  } else if (sensorValue >= 20 && sensorValue < 25) {
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, HIGH);
+    digitalWrite(led3, HIGH);
+    digitalWrite(led4, HIGH);
+    digitalWrite(led5, HIGH);
+    digitalWrite(led6, LOW);
+  }
+  else if (sensorValue >= 25 && sensorValue <= 30) {
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, HIGH);
+    digitalWrite(led3, HIGH);
+    digitalWrite(led4, HIGH);
+    digitalWrite(led5, HIGH);
+    digitalWrite(led6, HIGH);
+  }
 }
 
 void setup() {
   Serial.begin(115200);
   Serial.println();
-  
+
   pinMode(redLED, OUTPUT);
   pinMode(greenLED, OUTPUT);
 
@@ -114,7 +182,7 @@ void wsconnect() {
   json += outputType + "\"}}";
   Serial.println(json);
   webSocketClient.sendData(json);
-  
+
   digitalWrite(redLED, LOW);
   digitalWrite(greenLED, HIGH);
 }

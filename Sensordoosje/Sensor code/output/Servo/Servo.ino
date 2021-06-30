@@ -1,6 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <WebSocketClient.h>
 #include <ArduinoJson.h>
+#include <Servo.h>
 
 // data to server
 boolean handshakeFailed = 0;
@@ -11,23 +12,46 @@ const char* password = "Senstable2";
 char* host = "192.168.4.1";  //replace this ip address with the ip address of your Node.Js server
 const int espport = 5050;
 
-String outputId = "OutputId";
-String outputType = "OutputType";
+String outputId = "4";
+String outputType = "Servo";
 
-#define outputPin 16  //D0
-#define greenLED 4    //D2
-#define redLED 0      //D3
+Servo servoLeft;
+Servo servoRight;
+
+#define servoLeftPin 0  //D3
+#define servoRightPin 2 //D4
+#define greenLED 16     //D0
+#define redLED 5        //D1
 
 WebSocketClient webSocketClient;
 // Use WiFiClient class to create TCP connections
 WiFiClient client;
 
 void setupOutput() {
-  pinMode(outputPin, OUTPUT);
+  servoLeft.attach(servoLeftPin);
+  servoRight.attach(servoRightPin);
+}
+
+void servoClose() {
+  int possitionLeftServo = 90;
+  int possitionRightServo = 90;
+  servoLeft.write(possitionLeftServo);
+  servoRight.write(possitionRightServo);
+}
+
+void servoOpen() {
+  int possitionLeftServo = 180;
+  int possitionRightServo = 0;
+  servoLeft.write(possitionLeftServo);
+  servoRight.write(possitionRightServo);
 }
 
 void updateOutput(int sensorValue) {
-//  Do something with sensorValue
+  if (sensorValue == 0) {
+    servoClose();
+  } else {
+    servoOpen();
+  }
 }
 
 void setup() {

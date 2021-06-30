@@ -18,6 +18,8 @@ String physicalQuantity = "physicalQuantity";
 String unit = "unit";
 
 #define sensorPin 16  //D0
+#define greenLED 4    //D2
+#define redLED 0      //D3
 
 void readSensor() {
 
@@ -33,6 +35,11 @@ void setup() {
   WiFi.begin(ssid, password);
   Serial.begin(115200);
   setupSensor();
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+
+  digitalWrite(redLED, HIGH);
+  digitalWrite(greenLED, LOW);
 
   // wacht totdat er een WiFi connectie is
   while (WiFi.status() != WL_CONNECTED) {
@@ -45,6 +52,8 @@ void setup() {
 
 void loop() {
   if (client.connect(host, 80)) {
+    digitalWrite(redLED, LOW);
+    digitalWrite(greenLED, HIGH);
     readSensor();
     String url = "update.php?sensorId=";
     url += String(sensorId);

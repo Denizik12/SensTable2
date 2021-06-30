@@ -11,23 +11,51 @@ const char* password = "Senstable2";
 char* host = "192.168.4.1";  //replace this ip address with the ip address of your Node.Js server
 const int espport = 5050;
 
-String outputId = "OutputId";
-String outputType = "OutputType";
+String outputId = "2";
+String outputType = "Buzzer";
 
-#define outputPin 16  //D0
-#define greenLED 4    //D2
-#define redLED 0      //D3
+#define Buzzer 2      //D4
+#define greenLED 16   //D0
+#define redLED 14     //D5
+
+//RGB LED
+#define RED_PIN 5     //D1
+#define GREEN_PIN 4   //D2
+#define BLUE_PIN 0    //D3
 
 WebSocketClient webSocketClient;
 // Use WiFiClient class to create TCP connections
 WiFiClient client;
 
 void setupOutput() {
-  pinMode(outputPin, OUTPUT);
+  pinMode(Buzzer, OUTPUT);
+  pinMode(RED_PIN, OUTPUT);
+  pinMode(GREEN_PIN, OUTPUT);
+  pinMode(BLUE_PIN, OUTPUT);
+}
+
+void RGB(int redValue, int greenValue, int blueValue) {
+  analogWrite(RED_PIN, redValue);
+  analogWrite(GREEN_PIN, greenValue);
+  analogWrite(BLUE_PIN, blueValue);
+}
+
+void buzzOn() {
+  tone(Buzzer, 2000);
+  RGB(255, 0, 255);
+}
+
+void buzzOff() {
+  noTone(Buzzer);
+  RGB(0, 255, 255);
 }
 
 void updateOutput(int sensorValue) {
-//  Do something with sensorValue
+  if (sensorValue == 1) {
+    buzzOn();
+  } else {
+    buzzOff();
+  }
 }
 
 void setup() {
