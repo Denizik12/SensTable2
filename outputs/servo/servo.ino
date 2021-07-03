@@ -4,8 +4,8 @@ Servo servoLeft;
 Servo servoRight;
 
 void setup() {
-  servoLeft.attach(9);
-  servoRight.attach(10);
+  servoLeft.attach(10);
+  servoRight.attach(9);
 }
 
 void loop() {
