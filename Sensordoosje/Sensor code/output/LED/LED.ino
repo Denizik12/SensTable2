@@ -1,64 +1,147 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include <WebSocketClient.h>
+#include <ArduinoJson.h>
+#include <Servo.h>
 
-// Netwerk configuratie
-const char* ssid = "Z-ArcherC1200 2.4";
-const char* password = "meekeren69420";
-const char* host = "145.24.222.125";
+// data to server
+boolean handshakeFailed = 0;
+String data[3] = {};
+char path[] = "/";   //identifier of this device
+const char* ssid     = "SenstableNetwork";
+const char* password = "Senstable2";
+char* host = "192.168.4.1";  //replace this ip address with the ip address of your Node.Js server
+const int espport = 5050;
 
-// Client object
+String outputId = "4";
+String outputType = "Servo";
+
+Servo servoLeft;
+Servo servoRight;
+
+#define servoLeftPin 0  //D3
+#define servoRightPin 4 //D2
+#define greenLED 16     //D0
+#define redLED 5        //D1
+
+
+WebSocketClient webSocketClient;
+// Use WiFiClient class to create TCP connections
 WiFiClient client;
 
-// Tijd tussen metingen
-const int sleepTimeMiliSeconds = 500;
-
-String output_type = "1";
-float sensor_value = 0;
-
-#define output_pin 5  //D0
-
-void outputSensor() {
-  
-
-  Serial.println(sensor_value);
+void setupOutput() {
+  servoLeft.attach(servoLeftPin);
+  servoRight.attach(servoRightPin);
 }
 
-void setupOutput() {
-  pinMode(output_pin, OUTPUT);
+void servoClose() {
+  int possitionLeftServo = 180;
+  int possitionRightServo = 0;
+  servoLeft.write(possitionLeftServo);
+  servoRight.write(possitionRightServo);
+}
+
+void servoOpen() {
+  int possitionLeftServo = 90;
+  int possitionRightServo = 90;
+  servoLeft.write(possitionLeftServo);
+  servoRight.write(possitionRightServo);
+}
+
+void updateOutput(int sensorValue) {
+  if (sensorValue == 0) {
+//    servoClose();
+      Serial.println("close");
+  } else {
+//    servoOpen();
+      Serial.println("open");
+  }
 }
 
 void setup() {
-  WiFi.begin(ssid, password);
   Serial.begin(115200);
-  setupOutput();
-
-  // wacht totdat er een WiFi connectie is
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(500);
-  }
   Serial.println();
-  Serial.print("IP Address (AP): "); Serial.println(WiFi.localIP());
+  
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+
+  digitalWrite(redLED, HIGH);
+  digitalWrite(greenLED, LOW);
+
+  //  send data to server
+  // We start by connecting to a WiFi network
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+  delay(1000);
+
+  setupOutput();
+  wsconnect();
 }
 
 void loop() {
-  if (client.connect(host, 80)) {
-     if (WiFi.status() == WL_CONNECTED) { //Check WiFi connection status
-    HTTPClient http; //Declare object of class HTTPClient
+  String Data;
 
-    String url = "http://145.24.222.125";
-    url += "/getSensorOutput.php";
+  webSocketClient.getData(Data);
 
-    http.begin(url); //Specify request destination
+  if (Data.length() > 0) {
+    Serial.print("Received data: ");
+    Serial.println(Data.toInt());
 
-    int httpCode = http.GET();   //Send the request
-    String payload = http.getString();                  //Get the response payload
-    
-    Serial.println(payload);
-    http.end();  //Close connection
-     } else {
-    Serial.println("Error in WiFi connection");
+//    updateOutput(Data.toInt());
   }
+}
+
+//***************function definitions**********************************************************************************
+void wsconnect() {
+  // Connect to the websocket server
+  if (client.connect(host, espport)) {
+    Serial.println("Connected");
+  } else {
+    Serial.println("Connection failed.");
+    delay(1000);
+
+    if (handshakeFailed) {
+      handshakeFailed = 0;
+      ESP.restart();
+    }
+    handshakeFailed = 1;
   }
-  delay(sleepTimeMiliSeconds);
+
+  // Handshake with the server
+  webSocketClient.path = path;
+  webSocketClient.host = host;
+
+  if (webSocketClient.handshake(client)) {
+    Serial.println("Handshake successful");
+  } else {
+    Serial.println("Handshake failed.");
+    delay(4000);
+
+    if (handshakeFailed) {
+      handshakeFailed = 0;
+      ESP.restart();
+    }
+    handshakeFailed = 1;
+  }
+
+  // send outputId
+  String json = "{ \"client\":{ \"id\": ";
+  json += outputId;
+  json += ", \"outputType\": \"";
+  json += outputType + "\"}}";
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  
+  digitalWrite(redLED, LOW);
+  digitalWrite(greenLED, HIGH);
 }

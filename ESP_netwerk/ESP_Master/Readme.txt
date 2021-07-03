@@ -1,0 +1,1 @@
+Niet meer nodig aangezien we de master controller hebben verwisseld met een Raspberry Pi 4.

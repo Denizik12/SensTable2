@@ -1,154 +1,76 @@
-#include <WebSocketClient.h>
-
-/******Esp8266_Websocket.ino*************/
 #include <ESP8266WiFi.h>
 
-#include <Servo.h>        //Servo library
- 
-Servo servo_test;      //initialize a servo object for the connected servo  
+// Netwerk configuratie
+const char* ssid = "SenstableNetwork";
+const char* password = "Senstable2";
+const char* host = "192.168.4.1";
 
-int LBSPin = 5;  // input pin
-int Obstakel = HIGH;  // HIGH betekent geen detectie
-int angle = 0;    
-int potentio = A0;      // initialize the A0analog pin for potentiometer
-
-boolean handshakeFailed = 0;
-String data = "";
-char path[] = "/";   //identifier of this device
-const char* ssid     = "PLACE_SSID_HERE";
-const char* ssid     = "PLACE_PASSWORD_HERE";
-char* host = "";  //replace this ip address with the ip address of your Node.Js server
-const int espport = 5050;
-
-
-WebSocketClient webSocketClient;
-unsigned long previousMillis = 0;
-unsigned long currentMillis;
-unsigned long interval = 300; //interval for sending data to the websocket server in ms
-// Use WiFiClient class to create TCP connections
+// Client object
 WiFiClient client;
 
- 
+// Tijd tussen metingen
+const int sleepTimeMiliSeconds = 300;
 
+String sensorId = "7";
+String sensorType = "Photo%20interrupt%20sensor";
+float sensorValue = 0;
+String physicalQuantity = "Photo%20interrupt%20sensor";
+String unit = "";
 
+#define sensorPin 16  //D0
+#define greenLED 4    //D2
+#define redLED 0      //D3
 
- 
+void readSensor() {
+  sensorValue = (float)!digitalRead(sensorPin);
+
+  Serial.println(sensorValue);
+}
+
+void setupSensor() {
+  pinMode(sensorPin, INPUT);
+}
 
 void setup() {
-  Serial.begin(115200);
-  //pinMode(readPin, INPUT);     // Initialize the LED_BUILTIN pin as an output
-  delay(10);
-  // We start by connecting to a WiFi network
-  pinMode(LBSPin, INPUT);
-  
-  servo_test.attach(14);   // attach the signal pin of servo to pin D5 of esp
-  pinMode(LED_BUILTIN,OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
-  Serial.println();
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-
- 
-
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
+  Serial.begin(115200);
+  setupSensor();
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
 
- 
+  digitalWrite(redLED, HIGH);
+  digitalWrite(greenLED, LOW);
 
+  // wacht totdat er een WiFi connectie is
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
     Serial.print(".");
+    delay(500);
   }
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-  delay(1000);
-
- 
-
-  wsconnect();
-  //  wifi_set_sleep_type(LIGHT_SLEEP_T);
+  Serial.println();
+  Serial.print("IP Address (AP): "); Serial.println(WiFi.localIP());
 }
+
 void loop() {
-  if (client.connected()) {
-    currentMillis = millis();
-    //Serial.println(data);
-    //****send log data to server in certain interval*************
-    //currentMillis=millis();
-    if (abs(currentMillis - previousMillis) >= interval) {
-      previousMillis = currentMillis;
-      String json = F("{ \"sensor\":{ \"id\": 7, \"value\": ");
-      String jsonEnd = "} }";
-
- 
-
-      // read data
-      data = (String) func(); //read adc values, this will give random value, since no sensor is connected.
-
- 
-
-      String finalJson = json + data + jsonEnd;
-      Serial.println(finalJson);
-      //For this project we are pretending that these random values are sensor values
-      webSocketClient.sendData(finalJson);//send sensor data to websocket server
-    }
-    else {
-    }
-    delay(5);
-  }
-
-  angle = analogRead(potentio); 
-  //Serial.println(angle);// reading the potentiometer value between 0 and 1023 
-  angle = map(angle, 0, 1023, 0, 179);  
-  //Serial.println(angle);// scaling the potentiometer value to angle value for servo between 0 and 180) 
-  servo_test.write(angle);
-  delay(15);
-}
-//***************************************
-
- 
-
-//******function definitions***************************
-void wsconnect() {
-  // Connect to the websocket server
-  if (client.connect(host, espport)) {
-    Serial.println("Connected");
+  if (client.connect(host, 80)) {
+    digitalWrite(redLED, LOW);
+    digitalWrite(greenLED, HIGH);
+    readSensor();
+    String url = "update.php?sensorId=";
+    url += String(sensorId);
+    url += "&sensorType=";
+    url += String(sensorType);
+    url += "&sensorValue=";
+    url += String(sensorValue);
+    url += "&physicalQuantity=";
+    url += String(physicalQuantity);
+    url += "&unit=";
+    url += String(unit);
+    client.println(String("GET /") + url + " HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Connection: close\r\n\r\n"); // minimum set of required URL headers
+    client.flush();
+    client.stop();
   } else {
-    Serial.println("Connection failed.");
-    delay(1000);
-
- 
-
-    if (handshakeFailed) {
-      handshakeFailed = 0;
-      ESP.restart();
-    }
-    handshakeFailed = 1;
+    ESP.restart();
   }
-  // Handshake with the server
-  webSocketClient.path = path;
-  webSocketClient.host = host;
-  if (webSocketClient.handshake(client)) {
-    Serial.println("Handshake successful");
-  } else {
-
- 
-
-    Serial.println("Handshake failed.");
-    delay(4000);
-
- 
-
-    if (handshakeFailed) {
-      handshakeFailed = 0;
-      ESP.restart();
-    }
-    handshakeFailed = 1;
-  }
-}
-int func(){
-  Obstakel = digitalRead(LBSPin);
-  Serial.println(Obstakel);
-  return Obstakel;
+  delay(sleepTimeMiliSeconds);
 }

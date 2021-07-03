@@ -1,22 +1,44 @@
 #include <ESP8266WiFi.h>
 #include <WebSocketClient.h>
+#include <ArduinoJson.h>
 
 // data to server
 boolean handshakeFailed = 0;
 String data[3] = {};
 char path[] = "/";   //identifier of this device
-const char* ssid     = "Ziwe";
-const char* password = "testtest";
-char* host = "145.24.222.125";  //replace this ip address with the ip address of your Node.Js server
-const int espport = 8789;
+const char* ssid     = "SenstableNetwork";
+const char* password = "Senstable2";
+char* host = "192.168.4.1";  //replace this ip address with the ip address of your Node.Js server
+const int espport = 5050;
+
+String outputId = "OutputId";
+String outputType = "OutputType";
+
+#define outputPin 16  //D0
+#define greenLED 4    //D2
+#define redLED 0      //D3
 
 WebSocketClient webSocketClient;
 // Use WiFiClient class to create TCP connections
 WiFiClient client;
 
+void setupOutput() {
+  pinMode(outputPin, OUTPUT);
+}
+
+void updateOutput(int sensorValue) {
+//  Do something with sensorValue
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.println();
+  
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+
+  digitalWrite(redLED, HIGH);
+  digitalWrite(greenLED, LOW);
 
   //  send data to server
   // We start by connecting to a WiFi network
@@ -35,18 +57,21 @@ void setup() {
   Serial.println(WiFi.localIP());
   delay(1000);
 
+  setupOutput();
   wsconnect();
 }
 
 void loop() {
-  String data;
+  String Data;
 
-  webSocketClient.getData(data);
-  if (data.length() > 0) {
+  webSocketClient.getData(Data);
+
+  if (Data.length() > 0) {
     Serial.print("Received data: ");
-    Serial.println(data);
-  }
+    Serial.println(Data.toInt());
 
+    updateOutput(Data.toInt());
+  }
 }
 
 //***************function definitions**********************************************************************************
@@ -81,8 +106,15 @@ void wsconnect() {
     }
     handshakeFailed = 1;
   }
-  
+
   // send outputId
-    String json = F("{ \"client\":{ \"id\": 3} }");
-    webSocketClient.sendData(json);
+  String json = "{ \"client\":{ \"id\": ";
+  json += outputId;
+  json += ", \"outputType\": \"";
+  json += outputType + "\"}}";
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  
+  digitalWrite(redLED, LOW);
+  digitalWrite(greenLED, HIGH);
 }

@@ -12,11 +12,14 @@ WiFiClient client;
 const int sleepTimeMiliSeconds = 300;
 
 String sensorId = "8";
+String sensorType = "Reed%20switch";
 float sensorValue = 0;
 String physicalQuantity = "Reed";
 String unit = "";
 
 #define sensorPin 16  //D0
+#define greenLED 4    //D2
+#define redLED 0      //D3
 
 void readSensor() {
   sensorValue = (float)!digitalRead(sensorPin);
@@ -33,6 +36,11 @@ void setup() {
   WiFi.begin(ssid, password);
   Serial.begin(115200);
   setupSensor();
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+
+  digitalWrite(redLED, HIGH);
+  digitalWrite(greenLED, LOW);
 
   // wacht totdat er een WiFi connectie is
   while (WiFi.status() != WL_CONNECTED) {
@@ -45,9 +53,13 @@ void setup() {
 
 void loop() {
   if (client.connect(host, 80)) {
+    digitalWrite(redLED, LOW);
+    digitalWrite(greenLED, HIGH);
     readSensor();
     String url = "update.php?sensorId=";
     url += String(sensorId);
+    url += "&sensorType=";
+    url += String(sensorType);
     url += "&sensorValue=";
     url += String(sensorValue);
     url += "&physicalQuantity=";
@@ -58,8 +70,7 @@ void loop() {
     client.flush();
     client.stop();
   } else {
-    WiFi.disconnect();
-    setup();
+    ESP.restart();
   }
   delay(sleepTimeMiliSeconds);
 }
