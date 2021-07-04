@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="7062c2e1-19ac-496f-9375-0577afa34085" name="SenseTable" url="">
+        <fileTransfer rootFolder="/var/www/html" accessType="SFTP" host="145.24.222.125" port="22" sshConfigId="73e0f2b6-d9ca-4976-a484-93be073bd8eb" sshConfig="ubuntu-0984223@145.24.222.125:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
